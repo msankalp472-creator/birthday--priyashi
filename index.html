@@ -7,7 +7,6 @@
 
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
-
 *{box-sizing:border-box}
 
 body{
@@ -32,14 +31,14 @@ canvas{
   inset:0;
   pointer-events:none;
 }
-
 #stars{z-index:0}
 #sparkles{z-index:1}
 
-/* ===== INTRO ===== */
+/* ===== INTRO (BLACK BACKGROUND – AS BEFORE) ===== */
 #introScreen{
   position:fixed;
   inset:0;
+  background:black; /* ← THIS IS THE ONLY CHANGE */
   display:flex;
   justify-content:center;
   align-items:center;
@@ -54,7 +53,7 @@ canvas{
   text-align:center;
   text-shadow:
     0 0 20px rgba(255,255,255,.9),
-    0 0 40px rgba(255,180,200,.7);
+    0 0 40px rgba(255,200,200,.7);
 }
 
 /* ===== COVER ===== */
@@ -72,7 +71,6 @@ canvas{
 #cover h1{
   font-size:clamp(2.5rem,7vw,3.5rem);
 }
-
 #cover span{
   margin-top:12px;
   opacity:.7;
@@ -86,17 +84,59 @@ canvas{
   padding:60px 16px 140px;
 }
 
+/* ===== CAKE ===== */
+.cake{
+  text-align:center;
+  margin:80px auto 120px;
+}
+.cake h2{
+  font-size:1.8rem;
+  margin-bottom:20px;
+}
+.cakeBox{
+  width:160px;
+  height:120px;
+  margin:0 auto;
+  background:linear-gradient(135deg,#ff4ecd,#7b5cff);
+  border-radius:12px;
+  position:relative;
+  box-shadow:0 20px 40px rgba(0,0,0,.4);
+}
+.candle{
+  position:absolute;
+  top:-30px;
+  left:50%;
+  transform:translateX(-50%);
+  width:10px;
+  height:30px;
+  background:white;
+}
+.flame{
+  position:absolute;
+  top:-14px;
+  left:50%;
+  transform:translateX(-50%);
+  width:12px;
+  height:12px;
+  background:gold;
+  border-radius:50%;
+  animation:flicker .4s infinite alternate;
+}
+@keyframes flicker{
+  from{transform:translateX(-50%) scale(1)}
+  to{transform:translateX(-50%) scale(1.2)}
+}
+
+/* ===== STORY ===== */
 .story{
   max-width:420px;
   margin:0 auto 100px;
   text-align:center;
 }
-
 .story img{
   width:100%;
   border-radius:24px;
 }
-
 .story p{
   margin-top:16px;
   font-size:1.15rem;
@@ -133,6 +173,16 @@ canvas{
 <!-- CONTENT -->
 <div id="content">
 
+  <!-- CAKE -->
+  <div class="cake">
+    <h2>Magical Cake Time ✨</h2>
+    <div class="cakeBox">
+      <div class="candle">
+        <div class="flame"></div>
+      </div>
+    </div>
+  </div>
+
   <div class="story"><img src="photo1.jpg"><p>Every photo holds a memory.</p></div>
   <div class="story"><img src="photo2.jpg"><p>Make sure to live every moment happily.</p></div>
   <div class="story"><img src="photo3.jpg"><p>You are a wonderful person.</p></div>
@@ -140,57 +190,44 @@ canvas{
   <div class="story"><img src="photo5.jpg"><p>Keep shining. Always.</p></div>
 
   <div class="final" id="finalText"></div>
-
 </div>
 
 <script>
 /* ===== STARS ===== */
-const starCanvas=document.getElementById("stars");
-const sctx=starCanvas.getContext("2d");
-function resizeStars(){starCanvas.width=innerWidth;starCanvas.height=innerHeight}
-resizeStars();addEventListener("resize",resizeStars);
-
+const s=document.getElementById("stars"),sc=s.getContext("2d");
+function rs(){s.width=innerWidth;s.height=innerHeight}
+rs();addEventListener("resize",rs);
 let stars=[];
-for(let i=0;i<120;i++){
-  stars.push({x:Math.random()*innerWidth,y:Math.random()*innerHeight,r:Math.random()*1.2+.5});
-}
+for(let i=0;i<120;i++)stars.push({x:Math.random()*innerWidth,y:Math.random()*innerHeight,r:Math.random()*1.2+.5});
 function drawStars(){
-  sctx.clearRect(0,0,starCanvas.width,starCanvas.height);
-  sctx.fillStyle="rgba(255,255,255,.7)";
+  sc.clearRect(0,0,s.width,s.height);
+  sc.fillStyle="rgba(255,255,255,.7)";
   stars.forEach(st=>{
-    st.y+=0.15;
-    if(st.y>starCanvas.height)st.y=0;
-    sctx.beginPath();
-    sctx.arc(st.x,st.y,st.r,0,Math.PI*2);
-    sctx.fill();
+    st.y+=0.2;if(st.y>s.height)st.y=0;
+    sc.beginPath();sc.arc(st.x,st.y,st.r,0,Math.PI*2);sc.fill();
   });
   requestAnimationFrame(drawStars);
 }
 drawStars();
 
 /* ===== SPARKLES ===== */
-const spCanvas=document.getElementById("sparkles");
-const spctx=spCanvas.getContext("2d");
-function resizeSpark(){spCanvas.width=innerWidth;spCanvas.height=innerHeight}
-resizeSpark();addEventListener("resize",resizeSpark);
-
+const sp=document.getElementById("sparkles"),spc=sp.getContext("2d");
+function rsp(){sp.width=innerWidth;sp.height=innerHeight}
+rsp();addEventListener("resize",rsp);
 let spark=[];
-for(let i=0;i<60;i++){
-  spark.push({x:Math.random()*innerWidth,y:Math.random()*innerHeight,s:Math.random()*0.4+.3});
-}
+for(let i=0;i<60;i++)spark.push({x:Math.random()*innerWidth,y:Math.random()*innerHeight,s:Math.random()*0.4+.3});
 function drawSpark(){
-  spctx.clearRect(0,0,spCanvas.width,spCanvas.height);
-  spctx.fillStyle="rgba(255,255,255,.6)";
+  spc.clearRect(0,0,sp.width,sp.height);
+  spc.fillStyle="rgba(255,255,255,.6)";
   spark.forEach(p=>{
-    p.y-=p.s;
-    if(p.y<0)p.y=spCanvas.height;
-    spctx.fillText("✦",p.x,p.y);
+    p.y-=p.s;if(p.y<0)p.y=sp.height;
+    spc.fillText("✦",p.x,p.y);
   });
   requestAnimationFrame(drawSpark);
 }
 drawSpark();
 
-/* ===== INTRO TYPING ===== */
+/* ===== INTRO TYPE ===== */
 const introMessage="HAPPY BIRTHDAY";
 let i=0;
 function typeIntro(){
@@ -210,11 +247,7 @@ typeIntro();
 function startMain(){
   cover.style.display="none";
   content.style.display="block";
-  showFinalText();
-}
-
-/* ===== FINAL TEXT ===== */
-const finalMsg=`Happy Birthday, Priyanshiiii jiii 💕
+  finalText.textContent=`Happy Birthday, Priyanshiiii jiii 💕
 
 You are truly one of the best homies, one of the best friends, and one of the best girls I’ll ever meet.
 You have such a warm, gentle vibe—and along with that, a really beautiful heart.
@@ -225,11 +258,8 @@ I know recently marks nahi aa rahe hain, but don’t worry at all. Everything wi
 May this year bring you closer to your goals and fill your life with happiness—veryyyyy happy moments ✨
 
 Happy Birthday once again 💖🎂`;
-
-function showFinalText(){
-  finalText.textContent=finalMsg;
 }
 </script>
 
 </body>
-</html>
+  </html>
