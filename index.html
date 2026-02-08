@@ -7,6 +7,7 @@
 
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
 *{box-sizing:border-box}
 
 body{
@@ -26,8 +27,14 @@ body{
 }
 
 /* ===== CANVAS ===== */
-#stars{position:fixed;inset:0;z-index:0}
-#sparkles{position:fixed;inset:0;z-index:1;pointer-events:none}
+canvas{
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+}
+
+#stars{z-index:0}
+#sparkles{z-index:1}
 
 /* ===== INTRO ===== */
 #introScreen{
@@ -40,21 +47,14 @@ body{
 }
 
 #introText{
-  position:relative;
-  z-index:2;
   font-size:clamp(2.8rem,8vw,4.2rem);
   letter-spacing:6px;
   font-weight:600;
+  color:white;
+  text-align:center;
   text-shadow:
     0 0 20px rgba(255,255,255,.9),
     0 0 40px rgba(255,180,200,.7);
-}
-
-.fadeOut{
-  animation:fadeOut 1.5s ease forwards;
-}
-@keyframes fadeOut{
-  to{opacity:0;visibility:hidden}
 }
 
 /* ===== COVER ===== */
@@ -65,87 +65,52 @@ body{
   justify-content:center;
   align-items:center;
   flex-direction:column;
-  z-index:6;
+  z-index:4;
   cursor:pointer;
 }
 
 #cover h1{
   font-size:clamp(2.5rem,7vw,3.5rem);
-  animation:float 3s infinite;
 }
 
 #cover span{
-  margin-top:14px;
-  opacity:.85;
-  animation:pulse 1.5s infinite;
+  margin-top:12px;
+  opacity:.7;
 }
-
-@keyframes float{50%{transform:translateY(-12px)}}
-@keyframes pulse{50%{opacity:.4}}
 
 /* ===== CONTENT ===== */
 #content{
   display:none;
   position:relative;
-  z-index:4;
-  padding:60px 16px 160px;
+  z-index:3;
+  padding:60px 16px 140px;
 }
 
-/* ===== STORY ===== */
 .story{
-  max-width:480px;
-  margin:0 auto 120px;
-  opacity:0;
-  transform:scale(.9) translateY(40px);
-  transition:all 2s cubic-bezier(.2,.8,.2,1);
-}
-
-.story.show{
-  opacity:1;
-  transform:scale(1) translateY(0);
+  max-width:420px;
+  margin:0 auto 100px;
+  text-align:center;
 }
 
 .story img{
   width:100%;
-  border-radius:26px;
-  box-shadow:0 25px 60px rgba(0,0,0,.35);
+  border-radius:24px;
 }
 
 .story p{
-  margin-top:18px;
+  margin-top:16px;
   font-size:1.15rem;
-  background:linear-gradient(90deg,#fff,#ffe29f,#ffd6ff);
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
 }
 
 /* ===== FINAL TEXT ===== */
 .final{
-  max-width:820px;
-  margin:160px auto 0;
+  max-width:800px;
+  margin:120px auto 0;
   font-size:1.15rem;
   line-height:1.9;
   white-space:pre-line;
+  text-align:center;
 }
-
-.cursor{
-  display:inline-block;
-  width:2px;
-  height:1.2em;
-  background:white;
-  margin-left:4px;
-  animation:blink 1s infinite;
-}
-@keyframes blink{50%{opacity:0}}
-
-.sign{
-  margin-top:40px;
-  font-size:1.4rem;
-  font-weight:600;
-  opacity:0;
-  transition:opacity 2s ease;
-}
-.sign.show{opacity:1}
 </style>
 </head>
 
@@ -153,10 +118,6 @@ body{
 
 <canvas id="stars"></canvas>
 <canvas id="sparkles"></canvas>
-
-<audio id="bgm" loop>
-  <source src="music.mp3" type="audio/mpeg">
-</audio>
 
 <!-- INTRO -->
 <div id="introScreen">
@@ -166,7 +127,7 @@ body{
 <!-- COVER -->
 <div id="cover" onclick="startMain()">
   <h1>HAPPY BIRTHDAY ✨</h1>
-  <span>tap to begin</span>
+  <span>Tap to begin</span>
 </div>
 
 <!-- CONTENT -->
@@ -178,9 +139,7 @@ body{
   <div class="story"><img src="photo4.jpg"><p>Happy Birthday, homiee.</p></div>
   <div class="story"><img src="photo5.jpg"><p>Keep shining. Always.</p></div>
 
-  <div class="final" id="typeText"></div>
-  <span class="cursor" id="cursor"></span>
-  <div class="sign" id="sign">— from a homie 🤍</div>
+  <div class="final" id="finalText"></div>
 
 </div>
 
@@ -192,78 +151,70 @@ function resizeStars(){starCanvas.width=innerWidth;starCanvas.height=innerHeight
 resizeStars();addEventListener("resize",resizeStars);
 
 let stars=[];
-for(let i=0;i<160;i++)stars.push({x:Math.random()*innerWidth,y:Math.random()*innerHeight,r:Math.random()*1.5+.5});
-function animateStars(){
+for(let i=0;i<120;i++){
+  stars.push({x:Math.random()*innerWidth,y:Math.random()*innerHeight,r:Math.random()*1.2+.5});
+}
+function drawStars(){
   sctx.clearRect(0,0,starCanvas.width,starCanvas.height);
   sctx.fillStyle="rgba(255,255,255,.7)";
   stars.forEach(st=>{
-    st.y+=0.15;if(st.y>starCanvas.height)st.y=0;
-    sctx.beginPath();sctx.arc(st.x,st.y,st.r,0,Math.PI*2);sctx.fill();
+    st.y+=0.15;
+    if(st.y>starCanvas.height)st.y=0;
+    sctx.beginPath();
+    sctx.arc(st.x,st.y,st.r,0,Math.PI*2);
+    sctx.fill();
   });
-  requestAnimationFrame(animateStars);
+  requestAnimationFrame(drawStars);
 }
-animateStars();
+drawStars();
 
 /* ===== SPARKLES ===== */
 const spCanvas=document.getElementById("sparkles");
 const spctx=spCanvas.getContext("2d");
-function resizeSparkles(){spCanvas.width=innerWidth;spCanvas.height=innerHeight}
-resizeSparkles();addEventListener("resize",resizeSparkles);
+function resizeSpark(){spCanvas.width=innerWidth;spCanvas.height=innerHeight}
+resizeSpark();addEventListener("resize",resizeSpark);
 
 let spark=[];
-for(let i=0;i<70;i++){
-  spark.push({x:Math.random()*innerWidth,y:Math.random()*innerHeight,s:Math.random()*0.5+.3,t:Math.random()>.7?"❤":"✦"});
+for(let i=0;i<60;i++){
+  spark.push({x:Math.random()*innerWidth,y:Math.random()*innerHeight,s:Math.random()*0.4+.3});
 }
-function animateSparkles(){
+function drawSpark(){
   spctx.clearRect(0,0,spCanvas.width,spCanvas.height);
-  spctx.globalAlpha=.7;
-  spctx.font="16px serif";
+  spctx.fillStyle="rgba(255,255,255,.6)";
   spark.forEach(p=>{
-    p.y-=p.s;if(p.y<0)p.y=spCanvas.height;
-    spctx.fillText(p.t,p.x,p.y);
+    p.y-=p.s;
+    if(p.y<0)p.y=spCanvas.height;
+    spctx.fillText("✦",p.x,p.y);
   });
-  requestAnimationFrame(animateSparkles);
+  requestAnimationFrame(drawSpark);
 }
-animateSparkles();
+drawSpark();
 
-/* ===== INTRO TYPE ===== */
+/* ===== INTRO TYPING ===== */
 const introMessage="HAPPY BIRTHDAY";
-let ii=0;
+let i=0;
 function typeIntro(){
-  if(ii<introMessage.length){
-    introText.textContent+=introMessage[ii++];
+  if(i<introMessage.length){
+    introText.textContent+=introMessage[i++];
     setTimeout(typeIntro,120);
   }else{
     setTimeout(()=>{
-      introScreen.classList.add("fadeOut");
-      setTimeout(()=>{introScreen.remove();cover.style.display="flex"},1500);
+      introScreen.style.display="none";
+      cover.style.display="flex";
     },1000);
   }
 }
 typeIntro();
 
-/* ===== MAIN FLOW ===== */
+/* ===== MAIN ===== */
 function startMain(){
   cover.style.display="none";
   content.style.display="block";
-  bgm.volume=.3;
-  bgm.play();
-  revealStories();
+  showFinalText();
 }
 
-function revealStories(){
-  const stories=document.querySelectorAll(".story");
-  stories.forEach((s,i)=>{
-    setTimeout(()=>{
-      s.classList.add("show");
-      s.scrollIntoView({behavior:"smooth",block:"center"});
-    },i*2600);
-  });
-  setTimeout(typeWriter,stories.length*2600);
-}
-
-/* ===== FINAL TYPEWRITER ===== */
-const message=`Happy Birthday, Priyanshiiii jiii 💕
+/* ===== FINAL TEXT ===== */
+const finalMsg=`Happy Birthday, Priyanshiiii jiii 💕
 
 You are truly one of the best homies, one of the best friends, and one of the best girls I’ll ever meet.
 You have such a warm, gentle vibe—and along with that, a really beautiful heart.
@@ -274,17 +225,11 @@ I know recently marks nahi aa rahe hain, but don’t worry at all. Everything wi
 May this year bring you closer to your goals and fill your life with happiness—veryyyyy happy moments ✨
 
 Happy Birthday once again 💖🎂`;
-let ti=0;
-function typeWriter(){
-  if(ti<message.length){
-    typeText.textContent+=message[ti++];
-    setTimeout(typeWriter,35);
-  }else{
-    cursor.style.display="none";
-    sign.classList.add("show");
-  }
+
+function showFinalText(){
+  finalText.textContent=finalMsg;
 }
 </script>
 
 </body>
-                       </html>
+</html>
