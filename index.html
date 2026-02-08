@@ -12,13 +12,7 @@
 body{
   margin:0;
   font-family:'Poppins',sans-serif;
-  background:radial-gradient(
-    circle at top,
-    #FFE8D6,
-    #FFB7C5,
-    #E0BBE4,
-    #BEE7E8
-  );
+  background:radial-gradient(circle at top,#FFE8D6,#FFB7C5,#E0BBE4,#BEE7E8);
   background-size:200% 200%;
   animation:bgFlow 12s ease infinite;
   color:white;
@@ -31,42 +25,39 @@ body{
   100%{background-position:0% 50%}
 }
 
-/* ---------- CANVAS ---------- */
-canvas{
-  position:fixed;
-  inset:0;
-  z-index:0;
-}
+/* ===== CANVAS ===== */
+#stars{position:fixed;inset:0;z-index:0}
+#sparkles{position:fixed;inset:0;z-index:1;pointer-events:none}
 
-/* ---------- INTRO ---------- */
-#intro{
+/* ===== INTRO ===== */
+#introScreen{
   position:fixed;
   inset:0;
   display:flex;
   justify-content:center;
   align-items:center;
-  z-index:20;
-  overflow:hidden;
+  z-index:5;
 }
 
 #introText{
+  position:relative;
+  z-index:2;
   font-size:clamp(2.8rem,8vw,4.2rem);
   letter-spacing:6px;
   font-weight:600;
   text-shadow:
     0 0 20px rgba(255,255,255,.9),
     0 0 40px rgba(255,180,200,.7);
-  z-index:2;
 }
 
 .fadeOut{
-  animation:fadeOut 1.6s ease forwards;
+  animation:fadeOut 1.5s ease forwards;
 }
 @keyframes fadeOut{
   to{opacity:0;visibility:hidden}
 }
 
-/* ---------- COVER ---------- */
+/* ===== COVER ===== */
 #cover{
   position:fixed;
   inset:0;
@@ -74,7 +65,7 @@ canvas{
   justify-content:center;
   align-items:center;
   flex-direction:column;
-  z-index:10;
+  z-index:6;
   cursor:pointer;
 }
 
@@ -92,15 +83,15 @@ canvas{
 @keyframes float{50%{transform:translateY(-12px)}}
 @keyframes pulse{50%{opacity:.4}}
 
-/* ---------- CONTENT ---------- */
+/* ===== CONTENT ===== */
 #content{
   display:none;
   position:relative;
-  z-index:2;
+  z-index:4;
   padding:60px 16px 160px;
 }
 
-/* ---------- STORY ---------- */
+/* ===== STORY ===== */
 .story{
   max-width:480px;
   margin:0 auto 120px;
@@ -128,7 +119,7 @@ canvas{
   -webkit-text-fill-color:transparent;
 }
 
-/* ---------- FINAL TEXT ---------- */
+/* ===== FINAL TEXT ===== */
 .final{
   max-width:820px;
   margin:160px auto 0;
@@ -168,7 +159,7 @@ canvas{
 </audio>
 
 <!-- INTRO -->
-<div id="intro">
+<div id="introScreen">
   <div id="introText"></div>
 </div>
 
@@ -194,68 +185,73 @@ canvas{
 </div>
 
 <script>
-/* ---------- STARS ---------- */
-const s=document.getElementById("stars"),sc=s.getContext("2d");
-function rs(){s.width=innerWidth;s.height=innerHeight}
-rs();addEventListener("resize",rs);
-let stars=[];
-for(let i=0;i<160;i++)stars.push({x:Math.random()*s.width,y:Math.random()*s.height,r:Math.random()*1.5+.5});
-function starsAnim(){
-  sc.clearRect(0,0,s.width,s.height);
-  sc.fillStyle="rgba(255,255,255,.7)";
-  stars.forEach(st=>{
-    st.y+=0.15;if(st.y>s.height)st.y=0;
-    sc.beginPath();sc.arc(st.x,st.y,st.r,0,Math.PI*2);sc.fill();
-  });
-  requestAnimationFrame(starsAnim);
-}
-starsAnim();
+/* ===== STARS ===== */
+const starCanvas=document.getElementById("stars");
+const sctx=starCanvas.getContext("2d");
+function resizeStars(){starCanvas.width=innerWidth;starCanvas.height=innerHeight}
+resizeStars();addEventListener("resize",resizeStars);
 
-/* ---------- SPARKLES ---------- */
-const g=document.getElementById("sparkles"),gc=g.getContext("2d");
-function rg(){g.width=innerWidth;g.height=innerHeight}
-rg();addEventListener("resize",rg);
+let stars=[];
+for(let i=0;i<160;i++)stars.push({x:Math.random()*innerWidth,y:Math.random()*innerHeight,r:Math.random()*1.5+.5});
+function animateStars(){
+  sctx.clearRect(0,0,starCanvas.width,starCanvas.height);
+  sctx.fillStyle="rgba(255,255,255,.7)";
+  stars.forEach(st=>{
+    st.y+=0.15;if(st.y>starCanvas.height)st.y=0;
+    sctx.beginPath();sctx.arc(st.x,st.y,st.r,0,Math.PI*2);sctx.fill();
+  });
+  requestAnimationFrame(animateStars);
+}
+animateStars();
+
+/* ===== SPARKLES ===== */
+const spCanvas=document.getElementById("sparkles");
+const spctx=spCanvas.getContext("2d");
+function resizeSparkles(){spCanvas.width=innerWidth;spCanvas.height=innerHeight}
+resizeSparkles();addEventListener("resize",resizeSparkles);
+
 let spark=[];
 for(let i=0;i<70;i++){
-  spark.push({x:Math.random()*g.width,y:Math.random()*g.height,s:Math.random()*0.5+.3,t:Math.random()>.7?"❤":"✦"});
+  spark.push({x:Math.random()*innerWidth,y:Math.random()*innerHeight,s:Math.random()*0.5+.3,t:Math.random()>.7?"❤":"✦"});
 }
-function sparkAnim(){
-  gc.clearRect(0,0,g.width,g.height);
-  gc.globalAlpha=.7;
-  gc.font="16px serif";
+function animateSparkles(){
+  spctx.clearRect(0,0,spCanvas.width,spCanvas.height);
+  spctx.globalAlpha=.7;
+  spctx.font="16px serif";
   spark.forEach(p=>{
-    p.y-=p.s;if(p.y<0)p.y=g.height;
-    gc.fillText(p.t,p.x,p.y);
+    p.y-=p.s;if(p.y<0)p.y=spCanvas.height;
+    spctx.fillText(p.t,p.x,p.y);
   });
-  requestAnimationFrame(sparkAnim);
+  requestAnimationFrame(animateSparkles);
 }
-sparkAnim();
+animateSparkles();
 
-/* ---------- INTRO TYPE ---------- */
-const intro="HAPPY BIRTHDAY";
+/* ===== INTRO TYPE ===== */
+const introMessage="HAPPY BIRTHDAY";
 let ii=0;
-function introType(){
-  if(ii<intro.length){
-    introText.textContent+=intro[ii++];
-    setTimeout(introType,120);
+function typeIntro(){
+  if(ii<introMessage.length){
+    introText.textContent+=introMessage[ii++];
+    setTimeout(typeIntro,120);
   }else{
     setTimeout(()=>{
-      intro.classList.add("fadeOut");
-      setTimeout(()=>{intro.remove();cover.style.display="flex"},1500);
+      introScreen.classList.add("fadeOut");
+      setTimeout(()=>{introScreen.remove();cover.style.display="flex"},1500);
     },1000);
   }
 }
-introType();
+typeIntro();
 
-/* ---------- MAIN ---------- */
+/* ===== MAIN FLOW ===== */
 function startMain(){
   cover.style.display="none";
   content.style.display="block";
-  bgm.volume=.3;bgm.play();
-  reveal();
+  bgm.volume=.3;
+  bgm.play();
+  revealStories();
 }
 
-function reveal(){
+function revealStories(){
   const stories=document.querySelectorAll(".story");
   stories.forEach((s,i)=>{
     setTimeout(()=>{
@@ -266,8 +262,8 @@ function reveal(){
   setTimeout(typeWriter,stories.length*2600);
 }
 
-/* ---------- FINAL TEXT ---------- */
-const msg=`Happy Birthday, Priyanshiiii jiii 💕
+/* ===== FINAL TYPEWRITER ===== */
+const message=`Happy Birthday, Priyanshiiii jiii 💕
 
 You are truly one of the best homies, one of the best friends, and one of the best girls I’ll ever meet.
 You have such a warm, gentle vibe—and along with that, a really beautiful heart.
@@ -280,8 +276,8 @@ May this year bring you closer to your goals and fill your life with happiness�
 Happy Birthday once again 💖🎂`;
 let ti=0;
 function typeWriter(){
-  if(ti<msg.length){
-    typeText.textContent+=msg[ti++];
+  if(ti<message.length){
+    typeText.textContent+=message[ti++];
     setTimeout(typeWriter,35);
   }else{
     cursor.style.display="none";
@@ -291,4 +287,4 @@ function typeWriter(){
 </script>
 
 </body>
-</html>
+                       </html>
