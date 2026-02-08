@@ -13,8 +13,8 @@
 body{
   margin:0;
   font-family:'Poppins',sans-serif;
-  background:#000;
-  color:#fff;
+  background:black;
+  color:white;
   overflow-x:hidden;
 }
 
@@ -25,6 +25,31 @@ canvas{
   z-index:0;
 }
 
+/* CINEMATIC INTRO */
+#cinematicIntro{
+  position:fixed;
+  inset:0;
+  background:black;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  z-index:20;
+}
+
+#introText{
+  font-size:clamp(2.8rem,8vw,4.2rem);
+  letter-spacing:6px;
+  font-weight:600;
+  text-shadow:0 0 30px rgba(255,255,255,.8);
+}
+
+.fadeOut{
+  animation:fadeOut 1.5s ease forwards;
+}
+@keyframes fadeOut{
+  to{opacity:0;visibility:hidden}
+}
+
 /* COVER */
 #cover{
   position:fixed;
@@ -32,7 +57,7 @@ canvas{
   background:linear-gradient(135deg,#ff4ecd,#7b5cff,#00ffd5);
   background-size:400% 400%;
   animation:bgMove 8s ease infinite;
-  display:flex;
+  display:none;
   flex-direction:column;
   justify-content:center;
   align-items:center;
@@ -47,24 +72,19 @@ canvas{
 }
 
 #cover h1{
-  font-size:clamp(2.6rem,7vw,3.6rem);
-  letter-spacing:3px;
-  text-shadow:0 0 35px rgba(255,255,255,.8);
-  animation:float 3s ease-in-out infinite;
+  font-size:clamp(2.5rem,7vw,3.5rem);
+  animation:float 3s infinite;
 }
 
 #cover span{
-  margin-top:16px;
-  font-size:1.1rem;
-  animation:pulse 1.6s infinite;
+  margin-top:14px;
+  animation:pulse 1.5s infinite;
 }
 
 @keyframes float{
-  0%,100%{transform:translateY(0)}
   50%{transform:translateY(-12px)}
 }
 @keyframes pulse{
-  0%,100%{opacity:1}
   50%{opacity:.4}
 }
 
@@ -73,7 +93,54 @@ canvas{
   display:none;
   position:relative;
   z-index:2;
-  padding:60px 16px 140px;
+  padding:60px 16px 160px;
+}
+
+/* CINEMATIC SECTIONS */
+.cinematic{
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+  opacity:0;
+  transform:translateY(40px);
+  transition:all 2s ease;
+}
+.cinematic.show{
+  opacity:1;
+  transform:translateY(0);
+}
+
+.pov h2{
+  font-size:3.2rem;
+  letter-spacing:4px;
+  color:#ffd36a;
+}
+.pov p{
+  margin-top:14px;
+  font-size:1.2rem;
+}
+
+.cake{
+  font-size:6rem;
+  animation:float 2.5s infinite;
+  filter:drop-shadow(0 0 25px #ff77ff);
+}
+.cakeText{
+  margin-top:20px;
+  font-size:1.4rem;
+  background:linear-gradient(90deg,#ff9cff,#9affff);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+.title h1{
+  font-size:clamp(2.8rem,8vw,4rem);
+  background:linear-gradient(90deg,#ffd6ff,#caffff,#ffe29f);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
 }
 
 /* STORY */
@@ -84,20 +151,15 @@ canvas{
   transform:scale(.9) translateY(40px);
   transition:all 2s cubic-bezier(.2,.8,.2,1);
 }
-
 .story.show{
   opacity:1;
   transform:scale(1) translateY(0);
 }
-
 .story img{
   width:100%;
   border-radius:26px;
-  box-shadow:
-    0 0 45px rgba(120,200,255,.45),
-    0 30px 70px rgba(0,0,0,.9);
+  box-shadow:0 30px 70px rgba(0,0,0,.9);
 }
-
 .story p{
   margin-top:20px;
   font-size:1.15rem;
@@ -106,31 +168,33 @@ canvas{
   -webkit-text-fill-color:transparent;
 }
 
-/* FINAL TEXT */
+/* CINEMATIC TEXT */
 .final{
-  max-width:780px;
+  max-width:820px;
   margin:160px auto 0;
-  font-size:1.1rem;
+  font-size:1.15rem;
   line-height:1.9;
-  opacity:0;
-  transform:translateY(40px);
-  transition:all 2.2s ease;
+  white-space:pre-line;
 }
-
-.final.show{
-  opacity:1;
-  transform:translateY(0);
+.cursor{
+  display:inline-block;
+  width:2px;
+  height:1.2em;
+  background:white;
+  margin-left:4px;
+  animation:blink 1s infinite;
 }
-
+@keyframes blink{
+  50%{opacity:0}
+}
 .sign{
-  margin-top:34px;
+  margin-top:40px;
   font-size:1.4rem;
   font-weight:600;
-  letter-spacing:1px;
-  background:linear-gradient(90deg,#ffd6ff,#caffff);
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
+  opacity:0;
+  transition:opacity 2s ease;
 }
+.sign.show{opacity:1}
 </style>
 </head>
 
@@ -142,8 +206,13 @@ canvas{
   <source src="music.mp3" type="audio/mpeg">
 </audio>
 
+<!-- INTRO -->
+<div id="cinematicIntro">
+  <div id="introText"></div>
+</div>
+
 <!-- COVER -->
-<div id="cover" onclick="start()">
+<div id="cover" onclick="startMain()">
   <h1>HAPPY BIRTHDAY ✨</h1>
   <span>tap to begin</span>
 </div>
@@ -151,118 +220,113 @@ canvas{
 <!-- CONTENT -->
 <div id="content">
 
+  <section class="cinematic pov">
+    <h2>POV</h2>
+    <p>How I surprised her on her birthday… ✨</p>
+  </section>
+
+  <section class="cinematic">
+    <div class="cake">🎂</div>
+    <div class="cakeText">Magical Cake Time ✨</div>
+  </section>
+
+  <section class="cinematic title">
+    <h1>Happy Birthday<br>Priyanshiiii jiii 🎉</h1>
+  </section>
+
   <div class="story"><img src="photo1.jpg"><p>Every photo holds a memory.</p></div>
   <div class="story"><img src="photo2.jpg"><p>Make sure to live every moment happily.</p></div>
   <div class="story"><img src="photo3.jpg"><p>You are a wonderful person.</p></div>
   <div class="story"><img src="photo4.jpg"><p>Happy Birthday, homiee.</p></div>
   <div class="story"><img src="photo5.jpg"><p>Keep shining. Always.</p></div>
 
-  <div class="final" id="finalText">
-    Happy Birthday, Priyanshiiii jiii 💕<br><br>
-    You are truly one of the best homies, one of the best friends, and one of the best girls I’ll ever meet.
-    You have such a warm, gentle vibe—and along with that, a really beautiful heart.<br><br>
-    The way you manage everything at the same time—sports, academics, and coaching—is something I genuinely admire about you.
-    I know recently marks nahi aa rahe hain, but don’t worry at all. Everything will be okay. I know you can do it.<br><br>
-    May this year bring you closer to your goals and fill your life with happiness—veryyyyy happy moments ✨<br><br>
-    Happy Birthday once again 💖🎂
-  </div>
-
-  <div class="sign">— from a homie 🤍</div>
+  <div class="final" id="typeText"></div><span class="cursor" id="cursor"></span>
+  <div class="sign" id="sign">— from a homie 🤍</div>
 
 </div>
 
 <script>
-/* START */
-function start(){
-  document.getElementById("cover").style.display="none";
-  document.getElementById("content").style.display="block";
+/* STARFIELD */
+const canvas=document.getElementById("stars"),ctx=canvas.getContext("2d");
+let stars=[],shooting=[];
+function resize(){canvas.width=innerWidth;canvas.height=innerHeight}
+window.addEventListener("resize",resize);resize();
+for(let i=0;i<180;i++)stars.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,z:Math.random()*canvas.width});
+function shootStar(){shooting.push({x:Math.random()*canvas.width,y:0,vx:6,vy:10,life:30})}
+function animate(){
+  ctx.fillStyle="rgba(0,0,0,.4)";
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+  stars.forEach(s=>{
+    s.z-=2;if(s.z<=0)s.z=canvas.width;
+    const k=128/s.z,px=s.x*k+canvas.width/2,py=s.y*k+canvas.height/2;
+    if(px>=0&&px<=canvas.width&&py>=0&&py<=canvas.height)ctx.fillRect(px,py,2,2);
+  });
+  shooting.forEach((s,i)=>{
+    ctx.beginPath();ctx.moveTo(s.x,s.y);ctx.lineTo(s.x-s.vx*2,s.y-s.vy*2);ctx.stroke();
+    s.x+=s.vx;s.y+=s.vy;s.life--;if(s.life<=0)shooting.splice(i,1);
+  });
+  requestAnimationFrame(animate);
+}
+animate();
 
-  const music=document.getElementById("bgm");
-  music.volume=0.3;
-  music.play();
+/* INTRO TYPE */
+const intro="HAPPY BIRTHDAY";let ii=0;
+function introType(){
+  if(ii<intro.length){
+    introText.textContent+=intro[ii++];setTimeout(introType,120);
+  }else{
+    shootStar();shootStar();shootStar();
+    setTimeout(()=>{
+      cinematicIntro.classList.add("fadeOut");
+      setTimeout(()=>{cinematicIntro.remove();cover.style.display="flex"},1500);
+    },1200);
+  }
+}
+introType();
 
-  revealStories();
-  startStars();
+/* MAIN START */
+function startMain(){
+  cover.style.display="none";
+  content.style.display="block";
+  bgm.volume=0.3;bgm.play();
+  reveal();
 }
 
-/* AUTO SCROLL + SHOOTING STAR */
-function revealStories(){
-  const stories=document.querySelectorAll(".story");
-  stories.forEach((s,i)=>{
+/* FLOW */
+function reveal(){
+  const sections=document.querySelectorAll(".cinematic,.story");
+  sections.forEach((s,i)=>{
     setTimeout(()=>{
       s.classList.add("show");
-      s.scrollIntoView({behavior:"smooth", block:"center"});
+      s.scrollIntoView({behavior:"smooth"});
       shootStar();
-    }, i*2600);
+    },i*2600);
   });
-
-  setTimeout(()=>{
-    document.getElementById("finalText").classList.add("show");
-    document.getElementById("finalText").scrollIntoView({behavior:"smooth"});
-  }, stories.length*2600);
+  setTimeout(()=>{typeWriter()},sections.length*2600);
 }
 
-/* STARFIELD */
-const canvas=document.getElementById("stars");
-const ctx=canvas.getContext("2d");
-let stars=[], shooting=[];
+/* TYPEWRITER */
+const msg=`Happy Birthday, Priyanshiiii jiii 💕
 
-function resize(){
-  canvas.width=innerWidth;
-  canvas.height=innerHeight;
-}
-window.addEventListener("resize",resize);
-resize();
+You are truly one of the best homies, one of the best friends, and one of the best girls I’ll ever meet.
+You have such a warm, gentle vibe—and along with that, a really beautiful heart.
 
-function startStars(){
-  for(let i=0;i<180;i++){
-    stars.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,z:Math.random()*canvas.width});
+The way you manage everything at the same time—sports, academics, and coaching—is something I genuinely admire about you.
+I know recently marks nahi aa rahe hain, but don’t worry at all. Everything will be okay. I know you can do it.
+
+May this year bring you closer to your goals and fill your life with happiness—veryyyyy happy moments ✨
+
+Happy Birthday once again 💖🎂`;
+let ti=0;
+function typeWriter(){
+  if(ti<msg.length){
+    typeText.textContent+=msg[ti++];setTimeout(typeWriter,35);
+  }else{
+    cursor.style.display="none";
+    sign.classList.add("show");
   }
-  animate();
-}
-
-/* SHOOTING STAR */
-function shootStar(){
-  shooting.push({
-    x:Math.random()*canvas.width,
-    y:0,
-    vx:6,
-    vy:10,
-    life:30
-  });
-}
-
-function animate(){
-  ctx.fillStyle="rgba(0,0,0,0.35)";
-  ctx.fillRect(0,0,canvas.width,canvas.height);
-
-  stars.forEach(s=>{
-    s.z-=2;
-    if(s.z<=0) s.z=canvas.width;
-    const k=128/s.z;
-    const px=s.x*k+canvas.width/2;
-    const py=s.y*k+canvas.height/2;
-    if(px>=0&&px<=canvas.width&&py>=0&&py<=canvas.height){
-      ctx.fillStyle="white";
-      ctx.fillRect(px,py,2,2);
-    }
-  });
-
-  shooting.forEach((s,i)=>{
-    ctx.strokeStyle="rgba(255,255,255,0.9)";
-    ctx.beginPath();
-    ctx.moveTo(s.x,s.y);
-    ctx.lineTo(s.x-s.vx*2,s.y-s.vy*2);
-    ctx.stroke();
-    s.x+=s.vx;
-    s.y+=s.vy;
-    s.life--;
-    if(s.life<=0) shooting.splice(i,1);
-  });
-
-  requestAnimationFrame(animate);
 }
 </script>
 
 </body>
-</html>
+                       </html>
