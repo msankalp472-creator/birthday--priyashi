@@ -13,220 +13,320 @@
 body{
   margin:0;
   font-family:'Poppins',sans-serif;
-  background:radial-gradient(circle at top,#FFE8D6,#FFB7C5,#E0BBE4,#BEE7E8);
-  background-size:200% 200%;
-  animation:bgFlow 12s ease infinite;
+  background:black;
   color:white;
+  overflow-x:hidden;
 }
 
-@keyframes bgFlow{
-  0%{background-position:0% 50%}
-  50%{background-position:100% 50%}
-  100%{background-position:0% 50%}
+/* STARFIELD */
+canvas{
+  position:fixed;
+  inset:0;
+  z-index:0;
 }
 
-/* INTRO */
-#intro{
+/* CINEMATIC INTRO */
+#cinematicIntro{
   position:fixed;
   inset:0;
   background:black;
   display:flex;
   justify-content:center;
   align-items:center;
-  z-index:10;
+  z-index:20;
 }
+
 #introText{
-  font-size:3rem;
+  font-size:clamp(2.8rem,8vw,4.2rem);
   letter-spacing:6px;
-  text-shadow:0 0 20px white;
+  font-weight:600;
+  text-shadow:0 0 30px rgba(255,255,255,.8);
+}
+
+.fadeOut{
+  animation:fadeOut 1.5s ease forwards;
+}
+@keyframes fadeOut{
+  to{opacity:0;visibility:hidden}
 }
 
 /* COVER */
 #cover{
   position:fixed;
   inset:0;
+  background:linear-gradient(135deg,#ff4ecd,#7b5cff,#00ffd5);
+  background-size:400% 400%;
+  animation:bgMove 8s ease infinite;
   display:none;
+  flex-direction:column;
   justify-content:center;
   align-items:center;
-  flex-direction:column;
+  z-index:10;
   cursor:pointer;
 }
-#cover h1{font-size:3rem}
-#cover span{opacity:.7}
+
+@keyframes bgMove{
+  0%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 50%}
+}
+
+#cover h1{
+  font-size:clamp(2.5rem,7vw,3.5rem);
+  animation:float 3s infinite;
+}
+
+#cover span{
+  margin-top:14px;
+  animation:pulse 1.5s infinite;
+}
+
+@keyframes float{
+  50%{transform:translateY(-12px)}
+}
+@keyframes pulse{
+  50%{opacity:.4}
+}
 
 /* CONTENT */
 #content{
   display:none;
-  padding:60px 16px 140px;
-  text-align:center;
-}
-
-/* CAKE */
-.cake{
-  margin:80px auto 120px;
-}
-.cakeBox{
-  width:160px;
-  height:120px;
-  background:linear-gradient(135deg,#ff4ecd,#7b5cff);
-  margin:0 auto;
-  border-radius:14px;
   position:relative;
-}
-.candle{
-  position:absolute;
-  top:-30px;
-  left:50%;
-  transform:translateX(-50%);
-  width:10px;
-  height:30px;
-  background:white;
-}
-.flame{
-  position:absolute;
-  top:-14px;
-  left:50%;
-  transform:translateX(-50%);
-  width:12px;
-  height:12px;
-  background:gold;
-  border-radius:50%;
-  animation:flicker .4s infinite alternate;
-  cursor:pointer;
-}
-@keyframes flicker{
-  from{transform:translateX(-50%) scale(1)}
-  to{transform:translateX(-50%) scale(1.2)}
+  z-index:2;
+  padding:60px 16px 160px;
 }
 
-/* PHOTOS */
+/* CINEMATIC SECTIONS */
+.cinematic{
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+  opacity:0;
+  transform:translateY(40px);
+  transition:all 2s ease;
+}
+.cinematic.show{
+  opacity:1;
+  transform:translateY(0);
+}
+
+.pov h2{
+  font-size:3.2rem;
+  letter-spacing:4px;
+  color:#ffd36a;
+}
+.pov p{
+  margin-top:14px;
+  font-size:1.2rem;
+}
+
+.cake{
+  font-size:6rem;
+  animation:float 2.5s infinite;
+  filter:drop-shadow(0 0 25px #ff77ff);
+}
+.cakeText{
+  margin-top:20px;
+  font-size:1.4rem;
+  background:linear-gradient(90deg,#ff9cff,#9affff);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+.title h1{
+  font-size:clamp(2.8rem,8vw,4rem);
+  background:linear-gradient(90deg,#ffd6ff,#caffff,#ffe29f);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+/* STORY */
 .story{
-  max-width:420px;
-  margin:0 auto 100px;
+  max-width:480px;
+  margin:0 auto 120px;
+  opacity:0;
+  transform:scale(.9) translateY(40px);
+  transition:all 2s cubic-bezier(.2,.8,.2,1);
+}
+.story.show{
+  opacity:1;
+  transform:scale(1) translateY(0);
 }
 .story img{
   width:100%;
-  border-radius:24px;
+  border-radius:26px;
+  box-shadow:0 30px 70px rgba(0,0,0,.9);
+}
+.story p{
+  margin-top:20px;
+  font-size:1.15rem;
+  background:linear-gradient(90deg,#ffd6ff,#9affff,#ffe29f);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
 }
 
-/* FINAL TEXT */
+/* CINEMATIC TEXT */
 .final{
-  max-width:800px;
-  margin:120px auto 0;
+  max-width:820px;
+  margin:160px auto 0;
+  font-size:1.15rem;
+  line-height:1.9;
   white-space:pre-line;
-  line-height:1.8;
 }
+.cursor{
+  display:inline-block;
+  width:2px;
+  height:1.2em;
+  background:white;
+  margin-left:4px;
+  animation:blink 1s infinite;
+}
+@keyframes blink{
+  50%{opacity:0}
+}
+.sign{
+  margin-top:40px;
+  font-size:1.4rem;
+  font-weight:600;
+  opacity:0;
+  transition:opacity 2s ease;
+}
+.sign.show{opacity:1}
 </style>
 </head>
 
 <body>
 
+<canvas id="stars"></canvas>
+
+<audio id="bgm" loop>
+  <source src="music.mp3" type="audio/mpeg">
+</audio>
+
 <!-- INTRO -->
-<div id="intro">
+<div id="cinematicIntro">
   <div id="introText"></div>
 </div>
 
 <!-- COVER -->
 <div id="cover" onclick="startMain()">
   <h1>HAPPY BIRTHDAY ✨</h1>
-  <span>Tap to begin</span>
+  <span>tap to begin</span>
 </div>
 
 <!-- CONTENT -->
 <div id="content">
 
-  <!-- CAKE SECTION -->
-  <div class="cake">
-    <h2>Make a wish 🎂</h2>
-    <div class="cakeBox">
-      <div class="candle">
-        <div class="flame" id="flame"></div>
-      </div>
-    </div>
-    <p>Tap the candle to blow it ✨</p>
-  </div>
+  <section class="cinematic pov">
+    <h2>POV</h2>
+    <p>How I surprised her on her birthday… ✨</p>
+  </section>
 
-  <!-- PHOTOS -->
-  <div class="story"><img src="photo1.jpg"></div>
-  <div class="story"><img src="photo2.jpg"></div>
-  <div class="story"><img src="photo3.jpg"></div>
-  <div class="story"><img src="photo4.jpg"></div>
-  <div class="story"><img src="photo5.jpg"></div>
+  <section class="cinematic">
+    <div class="cake">🎂</div>
+    <div class="cakeText">Magical Cake Time ✨</div>
+  </section>
 
-  <!-- FINAL TEXT -->
-  <div class="final" id="finalText"></div>
+  <section class="cinematic title">
+    <h1>Happy Birthday<br>Priyanshiiii jiii 🎉</h1>
+  </section>
+
+  <div class="story"><img src="photo1.jpg"><p>Every photo holds a memory.</p></div>
+  <div class="story"><img src="photo2.jpg"><p>Make sure to live every moment happily.</p></div>
+  <div class="story"><img src="photo3.jpg"><p>You are a wonderful person.</p></div>
+  <div class="story"><img src="photo4.jpg"><p>Happy Birthday, homiee.</p></div>
+  <div class="story"><img src="photo5.jpg"><p>Keep shining. Always.</p></div>
+
+  <div class="final" id="typeText"></div><span class="cursor" id="cursor"></span>
+  <div class="sign" id="sign">— from a homie 🤍</div>
 
 </div>
 
 <script>
+/* STARFIELD */
+const canvas=document.getElementById("stars"),ctx=canvas.getContext("2d");
+let stars=[],shooting=[];
+function resize(){canvas.width=innerWidth;canvas.height=innerHeight}
+window.addEventListener("resize",resize);resize();
+for(let i=0;i<180;i++)stars.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,z:Math.random()*canvas.width});
+function shootStar(){shooting.push({x:Math.random()*canvas.width,y:0,vx:6,vy:10,life:30})}
+function animate(){
+  ctx.fillStyle="rgba(0,0,0,.4)";
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+  stars.forEach(s=>{
+    s.z-=2;if(s.z<=0)s.z=canvas.width;
+    const k=128/s.z,px=s.x*k+canvas.width/2,py=s.y*k+canvas.height/2;
+    if(px>=0&&px<=canvas.width&&py>=0&&py<=canvas.height)ctx.fillRect(px,py,2,2);
+  });
+  shooting.forEach((s,i)=>{
+    ctx.beginPath();ctx.moveTo(s.x,s.y);ctx.lineTo(s.x-s.vx*2,s.y-s.vy*2);ctx.stroke();
+    s.x+=s.vx;s.y+=s.vy;s.life--;if(s.life<=0)shooting.splice(i,1);
+  });
+  requestAnimationFrame(animate);
+}
+animate();
+
 /* INTRO TYPE */
-const introMsg="HAPPY BIRTHDAY";
-let i=0;
-function typeIntro(){
-  if(i<introMsg.length){
-    introText.textContent+=introMsg[i++];
-    setTimeout(typeIntro,120);
+const intro="HAPPY BIRTHDAY";let ii=0;
+function introType(){
+  if(ii<intro.length){
+    introText.textContent+=intro[ii++];setTimeout(introType,120);
   }else{
+    shootStar();shootStar();shootStar();
     setTimeout(()=>{
-      intro.style.display="none";
-      cover.style.display="flex";
-    },1000);
+      cinematicIntro.classList.add("fadeOut");
+      setTimeout(()=>{cinematicIntro.remove();cover.style.display="flex"},1500);
+    },1200);
   }
 }
-typeIntro();
+introType();
 
-/* START */
+/* MAIN START */
 function startMain(){
   cover.style.display="none";
   content.style.display="block";
-  autoScrollPhotos();
+  bgm.volume=0.3;bgm.play();
+  reveal();
 }
 
-/* CANDLE BLOW */
-flame.onclick=()=>{
-  flame.style.opacity="0";
-  flame.style.transform="scale(0)";
-};
-
-/* AUTO SCROLL PHOTOS */
-function autoScrollPhotos(){
-  const photos=document.querySelectorAll(".story");
-  photos.forEach((p,i)=>{
+/* FLOW */
+function reveal(){
+  const sections=document.querySelectorAll(".cinematic,.story");
+  sections.forEach((s,i)=>{
     setTimeout(()=>{
-      p.scrollIntoView({behavior:"smooth",block:"center"});
-    },i*2500);
+      s.classList.add("show");
+      s.scrollIntoView({behavior:"smooth"});
+      shootStar();
+    },i*2600);
   });
-  setTimeout(typeFinalText,photos.length*2500);
+  setTimeout(()=>{typeWriter()},sections.length*2600);
 }
 
-/* FINAL TEXT LINE BY LINE */
-const lines=[
-"Happy Birthday, Priyanshiiii jiii 💕",
-"",
-"You are truly one of the best homies, one of the best friends,",
-"and one of the best girls I’ll ever meet.",
-"",
-"The way you manage sports, academics and coaching",
-"is genuinely inspiring.",
-"",
-"Don’t worry about marks — everything will be okay.",
-"I know you can do it.",
-"",
-"May this year bring you closer to your goals",
-"and fill your life with happiness ✨",
-"",
-"Happy Birthday once again 🎂"
-];
+/* TYPEWRITER */
+const msg=`Happy Birthday, Priyanshiiii jiii 💕
 
-let li=0;
-function typeFinalText(){
-  if(li<lines.length){
-    finalText.textContent+=lines[li]+"\n";
-    li++;
-    setTimeout(typeFinalText,800);
+You are truly one of the best homies, one of the best friends, and one of the best girls I’ll ever meet.
+You have such a warm, gentle vibe—and along with that, a really beautiful heart.
+
+The way you manage everything at the same time—sports, academics, and coaching—is something I genuinely admire about you.
+I know recently marks nahi aa rahe hain, but don’t worry at all. Everything will be okay. I know you can do it.
+
+May this year bring you closer to your goals and fill your life with happiness—veryyyyy happy moments ✨
+
+Happy Birthday once again 💖🎂`;
+let ti=0;
+function typeWriter(){
+  if(ti<msg.length){
+    typeText.textContent+=msg[ti++];setTimeout(typeWriter,35);
+  }else{
+    cursor.style.display="none";
+    sign.classList.add("show");
   }
 }
 </script>
 
 </body>
-</html>
+  </html>
