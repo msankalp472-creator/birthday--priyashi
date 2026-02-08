@@ -2,23 +2,31 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Happy Birthday 💖</title>
+<title>Happy Birthday</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
 body{
   margin:0;
   font-family:'Poppins',sans-serif;
-  background:linear-gradient(135deg,#ff9a9e,#fad0c4);
-  color:white;
+  background:#0a0a0a;
+  color:#eaeaea;
   text-align:center;
+  overflow-x:hidden;
+}
+
+/* PARTICLES */
+canvas{
+  position:fixed;
+  inset:0;
+  z-index:0;
 }
 
 /* COVER */
 #cover{
   position:fixed;
   inset:0;
-  background:linear-gradient(135deg,#ff758c,#ff7eb3);
+  background:radial-gradient(circle at top,#1c1c1c,#000);
   display:flex;
   flex-direction:column;
   justify-content:center;
@@ -29,103 +37,192 @@ body{
 
 #cover h1{
   font-size:3rem;
+  letter-spacing:2px;
   animation:glow 2s infinite alternate;
 }
 
 #cover p{
   margin-top:15px;
-  font-size:1.2rem;
+  font-size:1.1rem;
+  opacity:0.7;
   animation:blink 1.5s infinite;
 }
 
 @keyframes glow{
-  from{text-shadow:0 0 10px #fff;}
-  to{text-shadow:0 0 25px #fff;}
+  from{text-shadow:0 0 8px #444;}
+  to{text-shadow:0 0 20px #888;}
 }
 @keyframes blink{
-  0%,100%{opacity:1;}
-  50%{opacity:0.4;}
+  0%,100%{opacity:0.7;}
+  50%{opacity:0.3;}
 }
 
 /* CONTENT */
 #content{
   display:none;
-  padding:20px;
-  animation:fadeIn 2s ease;
+  padding:25px;
+  position:relative;
+  z-index:2;
+  animation:fadeIn 1.5s ease;
 }
 @keyframes fadeIn{
   from{opacity:0;}
   to{opacity:1;}
 }
 
-.slideshow img{
+/* PHOTO FADE */
+.photo{
+  margin:35px auto;
+  opacity:0;
+  transform:translateY(10px);
+  transition:opacity 1.5s ease, transform 1.5s ease;
+}
+
+.photo.show{
+  opacity:1;
+  transform:translateY(0);
+}
+
+.photo img{
   width:90%;
-  max-width:400px;
-  border-radius:20px;
-  display:none;
-  box-shadow:0 15px 30px rgba(0,0,0,.3);
+  max-width:420px;
+  border-radius:18px;
+  box-shadow:0 15px 35px rgba(0,0,0,.6);
 }
 
-.message{
-  margin:25px;
-  font-size:1.2rem;
-  line-height:1.6;
+.caption{
+  margin-top:15px;
+  font-size:1.1rem;
+  opacity:0.8;
+  letter-spacing:0.5px;
 }
 
-.final{
-  margin-top:40px;
-  font-size:1.4rem;
+/* FINAL TEXT */
+.final-text{
+  margin-top:60px;
+  font-size:1.1rem;
+  line-height:1.7;
+  opacity:0;
+  transition:opacity 2s ease;
+}
+
+.final-text.show{
+  opacity:0.9;
+}
+
+.signature{
+  margin-top:25px;
+  font-size:1.3rem;
   font-weight:bold;
+  opacity:0;
+  transition:opacity 2s ease;
+}
+
+.signature.show{
+  opacity:1;
 }
 </style>
 </head>
 
 <body>
 
+<canvas id="particles"></canvas>
+
+<audio id="bgm" loop>
+  <source src="music.mp3" type="audio/mpeg">
+</audio>
+
+<!-- COVER -->
 <div id="cover" onclick="openCard()">
-  <h1>🎉 Happy Birthday 🎂</h1>
-  <p>Tap to open 💖</p>
+  <h1>HAPPY BIRTHDAY</h1>
+  <p>Tap to open</p>
 </div>
 
+<!-- CONTENT -->
 <div id="content">
-  <div class="slideshow">
-    <img src="photo1.jpg">
-    <img src="photo2.jpg">
-    <img src="photo3.jpg">
-    <img src="photo4.jpg">
-    <img src="photo5.jpg">
+
+  <div class="photo"><img src="photo1.jpg"><div class="caption">Every photo holds a memory.</div></div>
+  <div class="photo"><img src="photo2.jpg"><div class="caption">Make sure to live every moment happily.</div></div>
+  <div class="photo"><img src="photo3.jpg"><div class="caption">You are a wonderful person.</div></div>
+  <div class="photo"><img src="photo4.jpg"><div class="caption">Happy Birthday, homiee.</div></div>
+  <div class="photo"><img src="photo5.jpg"><div class="caption">Keep shining and keep being real.</div></div>
+
+  <div class="final-text" id="finalText">
+    Happy Birthday, Priyanshiiii jiii 💕<br><br>
+    You are truly one of the best homies, one of the best friends, and one of the best girls I’ll ever meet.
+    You have such a warm, gentle vibe—and along with that, a really beautiful heart.<br><br>
+    The way you manage everything at the same time—sports, academics, and coaching—is something I genuinely admire about you.
+    I know recently marks nahi aa rahe hain, but don’t worry at all. Everything will be okay. I know you can do it.<br><br>
+    May this year bring you closer to your goals and fill your life with happiness—veryyyyy happy moments ✨<br><br>
+    Happy Birthday once again 💖🎂
   </div>
 
-  <div class="message">
-    Every photo here holds a memory,<br>
-    every smile tells a story,<br>
-    and every moment reminds me<br>
-    how special you are 💕
-  </div>
-
-  <div class="final">
-    Once again… 💖<br>
-    HAPPY BIRTHDAY 🎂
-  </div>
+  <div class="signature" id="sign">— From a homie</div>
 </div>
 
 <script>
-let i=0, slides;
-
 function openCard(){
   document.getElementById("cover").style.display="none";
   document.getElementById("content").style.display="block";
-  slides=document.querySelectorAll(".slideshow img");
-  show();
+
+  const music=document.getElementById("bgm");
+  music.volume=0.25;
+  music.play();
+
+  showPhotos();
+  startParticles();
 }
-function show(){
-  slides.forEach(s=>s.style.display="none");
-  slides[i].style.display="block";
-  i=(i+1)%slides.length;
-  setTimeout(show,2500);
+
+/* SMOOTH PHOTO FADE */
+function showPhotos(){
+  const photos=document.querySelectorAll(".photo");
+  photos.forEach((p,i)=>{
+    setTimeout(()=>p.classList.add("show"), i*1800);
+  });
+
+  setTimeout(()=>{
+    document.getElementById("finalText").classList.add("show");
+    document.getElementById("sign").classList.add("show");
+  }, photos.length*1800);
+}
+
+/* PARTICLES */
+const canvas=document.getElementById("particles");
+const ctx=canvas.getContext("2d");
+let particles=[];
+
+function resize(){
+  canvas.width=window.innerWidth;
+  canvas.height=window.innerHeight;
+}
+window.addEventListener("resize",resize);
+resize();
+
+function startParticles(){
+  for(let i=0;i<60;i++){
+    particles.push({
+      x:Math.random()*canvas.width,
+      y:Math.random()*canvas.height,
+      r:Math.random()*2+1,
+      dy:Math.random()*0.4+0.2
+    });
+  }
+  animate();
+}
+
+function animate(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle="rgba(255,255,255,0.12)";
+  particles.forEach(p=>{
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+    ctx.fill();
+    p.y+=p.dy;
+    if(p.y>canvas.height) p.y=0;
+  });
+  requestAnimationFrame(animate);
 }
 </script>
 
 </body>
 </html>
-
