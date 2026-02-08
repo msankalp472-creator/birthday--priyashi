@@ -6,16 +6,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+*{box-sizing:border-box}
+
 body{
   margin:0;
   font-family:'Poppins',sans-serif;
-  background:#0a0a0a;
-  color:#eaeaea;
-  text-align:center;
+  background:#000;
+  color:#fff;
   overflow-x:hidden;
 }
 
-/* PARTICLES */
+/* STARFIELD */
 canvas{
   position:fixed;
   inset:0;
@@ -26,128 +29,135 @@ canvas{
 #cover{
   position:fixed;
   inset:0;
-  background:radial-gradient(circle at top,#1c1c1c,#000);
+  background:linear-gradient(135deg,#ff4ecd,#7b5cff,#00ffd5);
+  background-size:400% 400%;
+  animation:bgMove 8s ease infinite;
   display:flex;
   flex-direction:column;
   justify-content:center;
   align-items:center;
-  cursor:pointer;
   z-index:10;
+  cursor:pointer;
+}
+
+@keyframes bgMove{
+  0%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 50%}
 }
 
 #cover h1{
-  font-size:3rem;
-  letter-spacing:2px;
-  animation:glow 2s infinite alternate;
+  font-size:clamp(2.6rem,7vw,3.6rem);
+  letter-spacing:3px;
+  text-shadow:0 0 35px rgba(255,255,255,.8);
+  animation:float 3s ease-in-out infinite;
 }
 
-#cover p{
-  margin-top:15px;
+#cover span{
+  margin-top:16px;
   font-size:1.1rem;
-  opacity:0.7;
-  animation:blink 1.5s infinite;
+  animation:pulse 1.6s infinite;
 }
 
-@keyframes glow{
-  from{text-shadow:0 0 8px #444;}
-  to{text-shadow:0 0 20px #888;}
+@keyframes float{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-12px)}
 }
-@keyframes blink{
-  0%,100%{opacity:0.7;}
-  50%{opacity:0.3;}
+@keyframes pulse{
+  0%,100%{opacity:1}
+  50%{opacity:.4}
 }
 
 /* CONTENT */
 #content{
   display:none;
-  padding:25px;
   position:relative;
   z-index:2;
-  animation:fadeIn 1.5s ease;
-}
-@keyframes fadeIn{
-  from{opacity:0;}
-  to{opacity:1;}
+  padding:60px 16px 140px;
 }
 
-/* PHOTO FADE */
-.photo{
-  margin:35px auto;
+/* STORY */
+.story{
+  max-width:480px;
+  margin:0 auto 120px;
   opacity:0;
-  transform:translateY(10px);
-  transition:opacity 1.5s ease, transform 1.5s ease;
+  transform:scale(.9) translateY(40px);
+  transition:all 2s cubic-bezier(.2,.8,.2,1);
 }
 
-.photo.show{
+.story.show{
+  opacity:1;
+  transform:scale(1) translateY(0);
+}
+
+.story img{
+  width:100%;
+  border-radius:26px;
+  box-shadow:
+    0 0 45px rgba(120,200,255,.45),
+    0 30px 70px rgba(0,0,0,.9);
+}
+
+.story p{
+  margin-top:20px;
+  font-size:1.15rem;
+  background:linear-gradient(90deg,#ffd6ff,#9affff,#ffe29f);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+/* FINAL TEXT */
+.final{
+  max-width:780px;
+  margin:160px auto 0;
+  font-size:1.1rem;
+  line-height:1.9;
+  opacity:0;
+  transform:translateY(40px);
+  transition:all 2.2s ease;
+}
+
+.final.show{
   opacity:1;
   transform:translateY(0);
 }
 
-.photo img{
-  width:90%;
-  max-width:420px;
-  border-radius:18px;
-  box-shadow:0 15px 35px rgba(0,0,0,.6);
-}
-
-.caption{
-  margin-top:15px;
-  font-size:1.1rem;
-  opacity:0.8;
-  letter-spacing:0.5px;
-}
-
-/* FINAL TEXT */
-.final-text{
-  margin-top:60px;
-  font-size:1.1rem;
-  line-height:1.7;
-  opacity:0;
-  transition:opacity 2s ease;
-}
-
-.final-text.show{
-  opacity:0.9;
-}
-
-.signature{
-  margin-top:25px;
-  font-size:1.3rem;
-  font-weight:bold;
-  opacity:0;
-  transition:opacity 2s ease;
-}
-
-.signature.show{
-  opacity:1;
+.sign{
+  margin-top:34px;
+  font-size:1.4rem;
+  font-weight:600;
+  letter-spacing:1px;
+  background:linear-gradient(90deg,#ffd6ff,#caffff);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
 }
 </style>
 </head>
 
 <body>
 
-<canvas id="particles"></canvas>
+<canvas id="stars"></canvas>
 
 <audio id="bgm" loop>
   <source src="music.mp3" type="audio/mpeg">
 </audio>
 
 <!-- COVER -->
-<div id="cover" onclick="openCard()">
-  <h1>HAPPY BIRTHDAY</h1>
-  <p>Tap to open</p>
+<div id="cover" onclick="start()">
+  <h1>HAPPY BIRTHDAY ✨</h1>
+  <span>tap to begin</span>
 </div>
 
 <!-- CONTENT -->
 <div id="content">
 
-  <div class="photo"><img src="photo1.jpg"><div class="caption">Every photo holds a memory.</div></div>
-  <div class="photo"><img src="photo2.jpg"><div class="caption">Make sure to live every moment happily.</div></div>
-  <div class="photo"><img src="photo3.jpg"><div class="caption">You are a wonderful person.</div></div>
-  <div class="photo"><img src="photo4.jpg"><div class="caption">Happy Birthday, homiee.</div></div>
-  <div class="photo"><img src="photo5.jpg"><div class="caption">Keep shining and keep being real.</div></div>
+  <div class="story"><img src="photo1.jpg"><p>Every photo holds a memory.</p></div>
+  <div class="story"><img src="photo2.jpg"><p>Make sure to live every moment happily.</p></div>
+  <div class="story"><img src="photo3.jpg"><p>You are a wonderful person.</p></div>
+  <div class="story"><img src="photo4.jpg"><p>Happy Birthday, homiee.</p></div>
+  <div class="story"><img src="photo5.jpg"><p>Keep shining. Always.</p></div>
 
-  <div class="final-text" id="finalText">
+  <div class="final" id="finalText">
     Happy Birthday, Priyanshiiii jiii 💕<br><br>
     You are truly one of the best homies, one of the best friends, and one of the best girls I’ll ever meet.
     You have such a warm, gentle vibe—and along with that, a really beautiful heart.<br><br>
@@ -157,69 +167,99 @@ canvas{
     Happy Birthday once again 💖🎂
   </div>
 
-  <div class="signature" id="sign">— From a homie</div>
+  <div class="sign">— from a homie 🤍</div>
+
 </div>
 
 <script>
-function openCard(){
+/* START */
+function start(){
   document.getElementById("cover").style.display="none";
   document.getElementById("content").style.display="block";
 
   const music=document.getElementById("bgm");
-  music.volume=0.25;
+  music.volume=0.3;
   music.play();
 
-  showPhotos();
-  startParticles();
+  revealStories();
+  startStars();
 }
 
-/* SMOOTH PHOTO FADE */
-function showPhotos(){
-  const photos=document.querySelectorAll(".photo");
-  photos.forEach((p,i)=>{
-    setTimeout(()=>p.classList.add("show"), i*1800);
+/* AUTO SCROLL + SHOOTING STAR */
+function revealStories(){
+  const stories=document.querySelectorAll(".story");
+  stories.forEach((s,i)=>{
+    setTimeout(()=>{
+      s.classList.add("show");
+      s.scrollIntoView({behavior:"smooth", block:"center"});
+      shootStar();
+    }, i*2600);
   });
 
   setTimeout(()=>{
     document.getElementById("finalText").classList.add("show");
-    document.getElementById("sign").classList.add("show");
-  }, photos.length*1800);
+    document.getElementById("finalText").scrollIntoView({behavior:"smooth"});
+  }, stories.length*2600);
 }
 
-/* PARTICLES */
-const canvas=document.getElementById("particles");
+/* STARFIELD */
+const canvas=document.getElementById("stars");
 const ctx=canvas.getContext("2d");
-let particles=[];
+let stars=[], shooting=[];
 
 function resize(){
-  canvas.width=window.innerWidth;
-  canvas.height=window.innerHeight;
+  canvas.width=innerWidth;
+  canvas.height=innerHeight;
 }
 window.addEventListener("resize",resize);
 resize();
 
-function startParticles(){
-  for(let i=0;i<60;i++){
-    particles.push({
-      x:Math.random()*canvas.width,
-      y:Math.random()*canvas.height,
-      r:Math.random()*2+1,
-      dy:Math.random()*0.4+0.2
-    });
+function startStars(){
+  for(let i=0;i<180;i++){
+    stars.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,z:Math.random()*canvas.width});
   }
   animate();
 }
 
-function animate(){
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-  ctx.fillStyle="rgba(255,255,255,0.12)";
-  particles.forEach(p=>{
-    ctx.beginPath();
-    ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
-    ctx.fill();
-    p.y+=p.dy;
-    if(p.y>canvas.height) p.y=0;
+/* SHOOTING STAR */
+function shootStar(){
+  shooting.push({
+    x:Math.random()*canvas.width,
+    y:0,
+    vx:6,
+    vy:10,
+    life:30
   });
+}
+
+function animate(){
+  ctx.fillStyle="rgba(0,0,0,0.35)";
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+
+  stars.forEach(s=>{
+    s.z-=2;
+    if(s.z<=0) s.z=canvas.width;
+    const k=128/s.z;
+    const px=s.x*k+canvas.width/2;
+    const py=s.y*k+canvas.height/2;
+    if(px>=0&&px<=canvas.width&&py>=0&&py<=canvas.height){
+      ctx.fillStyle="white";
+      ctx.fillRect(px,py,2,2);
+    }
+  });
+
+  shooting.forEach((s,i)=>{
+    ctx.strokeStyle="rgba(255,255,255,0.9)";
+    ctx.beginPath();
+    ctx.moveTo(s.x,s.y);
+    ctx.lineTo(s.x-s.vx*2,s.y-s.vy*2);
+    ctx.stroke();
+    s.x+=s.vx;
+    s.y+=s.vy;
+    s.life--;
+    if(s.life<=0) shooting.splice(i,1);
+  });
+
   requestAnimationFrame(animate);
 }
 </script>
