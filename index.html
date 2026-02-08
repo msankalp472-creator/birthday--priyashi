@@ -34,15 +34,15 @@ canvas{
 #stars{z-index:0}
 #sparkles{z-index:1}
 
-/* ===== INTRO (BLACK BACKGROUND – AS BEFORE) ===== */
+/* ===== INTRO (BLACK – FIXED) ===== */
 #introScreen{
   position:fixed;
   inset:0;
-  background:black; /* ← THIS IS THE ONLY CHANGE */
+  background:#000;           /* stays black */
   display:flex;
   justify-content:center;
   align-items:center;
-  z-index:5;
+  z-index:10;
 }
 
 #introText{
@@ -64,7 +64,7 @@ canvas{
   justify-content:center;
   align-items:center;
   flex-direction:column;
-  z-index:4;
+  z-index:9;
   cursor:pointer;
 }
 
@@ -80,8 +80,8 @@ canvas{
 #content{
   display:none;
   position:relative;
-  z-index:3;
-  padding:60px 16px 140px;
+  z-index:2;
+  padding:60px 16px 160px;
 }
 
 /* ===== CAKE ===== */
@@ -98,17 +98,17 @@ canvas{
   height:120px;
   margin:0 auto;
   background:linear-gradient(135deg,#ff4ecd,#7b5cff);
-  border-radius:12px;
+  border-radius:14px;
   position:relative;
   box-shadow:0 20px 40px rgba(0,0,0,.4);
 }
 .candle{
   position:absolute;
-  top:-30px;
+  top:-32px;
   left:50%;
   transform:translateX(-50%);
   width:10px;
-  height:30px;
+  height:32px;
   background:white;
 }
 .flame{
@@ -121,6 +121,7 @@ canvas{
   background:gold;
   border-radius:50%;
   animation:flicker .4s infinite alternate;
+  cursor:pointer;
 }
 @keyframes flicker{
   from{transform:translateX(-50%) scale(1)}
@@ -178,7 +179,7 @@ canvas{
     <h2>Magical Cake Time ✨</h2>
     <div class="cakeBox">
       <div class="candle">
-        <div class="flame"></div>
+        <div class="flame" id="flame"></div>
       </div>
     </div>
   </div>
@@ -238,26 +239,60 @@ function typeIntro(){
     setTimeout(()=>{
       introScreen.style.display="none";
       cover.style.display="flex";
-    },1000);
+    },1200);
   }
 }
 typeIntro();
 
-/* ===== MAIN ===== */
+/* ===== MAIN START ===== */
 function startMain(){
   cover.style.display="none";
   content.style.display="block";
-  finalText.textContent=`Happy Birthday, Priyanshiiii jiii 💕
+  startAutoScroll();
+}
 
-You are truly one of the best homies, one of the best friends, and one of the best girls I’ll ever meet.
-You have such a warm, gentle vibe—and along with that, a really beautiful heart.
+/* ===== BLOW CANDLE ===== */
+const flame=document.getElementById("flame");
+flame.addEventListener("click",()=>{
+  flame.style.opacity="0";
+  flame.style.transform="scale(0)";
+});
 
-The way you manage everything at the same time—sports, academics, and coaching—is something I genuinely admire about you.
-I know recently marks nahi aa rahe hain, but don’t worry at all. Everything will be okay. I know you can do it.
+/* ===== AUTO SCROLL ===== */
+function startAutoScroll(){
+  const stories=document.querySelectorAll(".story");
+  stories.forEach((s,i)=>{
+    setTimeout(()=>{
+      s.scrollIntoView({behavior:"smooth",block:"center"});
+    },i*2600);
+  });
+  setTimeout(typeFinalText,stories.length*2600);
+}
 
-May this year bring you closer to your goals and fill your life with happiness—veryyyyy happy moments ✨
+/* ===== FINAL TEXT (LINE BY LINE) ===== */
+const lines=[
+"Happy Birthday, Priyanshiiii jiii 💕",
+"",
+"You are truly one of the best homies, one of the best friends, and one of the best girls I’ll ever meet.",
+"You have such a warm, gentle vibe—and along with that, a really beautiful heart.",
+"",
+"The way you manage everything at the same time—sports, academics, and coaching—is something I genuinely admire about you.",
+"I know recently marks nahi aa rahe hain, but don’t worry at all.",
+"Everything will be okay. I know you can do it.",
+"",
+"May this year bring you closer to your goals",
+"and fill your life with happiness—veryyyyy happy moments ✨",
+"",
+"Happy Birthday once again 💖🎂"
+];
 
-Happy Birthday once again 💖🎂`;
+let lineIndex=0;
+function typeFinalText(){
+  if(lineIndex<lines.length){
+    finalText.textContent+=lines[lineIndex]+"\n";
+    lineIndex++;
+    setTimeout(typeFinalText,800);
+  }
 }
 </script>
 
